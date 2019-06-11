@@ -56,19 +56,30 @@ function playerChoice(){
    return p_choice;
 }
 
+
 function playRound(playChoice, compChoice){
     // Simulate a round of Paper Scissors Rock.
+    roundsPlayed += 1
+    let output = document.querySelector(".results");
+    let yourPlay = document.createElement("p");
+    let theirPlay = document.createElement("p");
+    yourPlay.textContent= `"Round ${roundsPlayed}: You played ${playChoice}"`
+    theirPlay.textContent = `"Opponent played ${compChoice}"`
+
+    output.appendChild(yourPlay);
+    output.appendChild(theirPlay);
+
     console.log(`"You played ${playChoice}"`)
     console.log(`"Opponent played ${compChoice}"`)
-    //TODO
+
     if (playChoice === compChoice){
         return "Tie."
     }else if (playChoice === "Paper"){
-        return(compChoice === "Rock") ? "You Win.":"You Lose.";
+        return(compChoice === "Rock") ? "Win":"Lose";
     }else if (playChoice === "Scissors"){
-        return (compChoice === "Paper") ? "You Win.":"You Lose.";
+        return (compChoice === "Paper") ? "Win":"Lose";
     }else{
-        return (compChoice ===  "Scissors") ? "You Win.":"You Lose." 
+        return (compChoice ===  "Scissors") ? "Win":"Lose"; 
     }
 
 }
@@ -87,7 +98,80 @@ function initCaps(string){
     first = first.toUpperCase()
     value = first.concat(second);
     return value;
- }   
+ } 
+ 
 
 
- game(5)
+ let pScore = document.getElementById("playScore");
+ let oScore = document.getElementById("oppScore");
+ let goal = document.getElementById("goal").value;
+ let compWins = 0;
+ let playWins = 0;
+ let ties = 0;
+ let roundsPlayed = 0
+ let active = false;
+
+function newGame(){
+ document.getElementById("info").textContent = "Good Luck!"
+ compWins = 0;
+ playWins = 0;
+ ties = 0;
+ roundsPlayed = 0
+ goal = Number(goal);
+ active = true;
+
+ pScore.textContent = playWins;
+ oScore.textContent = compWins;
+ // TODO Delete old Element. 
+ choices.forEach(choice => choice.addEventListener("click", getChoice));
+}
+ 
+function getChoice(e){
+    if (active === false){
+        return;
+    }
+    let playChoice = e.target.innerHTML;
+    let compChoice = computerChoice();
+    let result = playRound(playChoice, compChoice)
+    if (result === "Win"){
+        playWins += 1;
+        pScore.textContent = playWins;
+        pScore.classList.add("scored")
+
+    }else if (result=== "Lose"){
+        compWins += 1;
+        oScore.textContent = compWins;
+        oScore.classList.add("scored")
+
+    }else{
+        ties +=1;
+    }
+
+    if (playWins === goal){
+        console.log("Player Wins");
+        active = false;
+        document.getElementById("info").textContent = "You Win!"
+    }
+    else if (compWins === goal){
+        console.log("Opponent Wins")
+        active = false;
+        document.getElementById("info").textContent = "You Lose!"
+    }
+    if (!active){
+        choices.forEach(choice => choice.removeEventListener("click", getChoice));
+    }
+}
+
+
+
+
+// event handlers
+const choices = document.querySelectorAll(".choice");
+
+const scores = document.querySelectorAll(".score");
+scores.forEach(score => score.addEventListener("transitionend", (e) => {
+    score.classList.remove("scored");
+}));
+
+const button = document.getElementById("newGame");
+button.addEventListener("click", newGame);

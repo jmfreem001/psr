@@ -1,7 +1,59 @@
-h1 {
-    color: red;
-    margin-left: 30%;
-  
-  
-    
+
+body {
+
+  height: 1000px;
+  background-color: #cccccc;
+ }
+
+.container{
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  justify-items: center;
+  grid-template-areas: 
+    "... header header ..."
+    "sidebar sidebar canvas canvas"
+    "player results results opponent"
+  }
+
+.scored{
+  transition: 2s;
+  color:red;
+  font-size: 200%;
+  border: 6px dotted red;
+}
+.score{
+  width: 50px;
+
+}
+.header{
+  grid-area: header;
+  color: blue;
+}
+
+.sidebar{
+  grid-area: sidebar;
+  margin: 10px 20px
+}
+
+.canvas{
+  grid-area: canvas; 
+  height:120px;
+  width: 120px;
+}
+
+.results{
+  grid-area: results;
+  /* color: whitesmoke; */
+  /* background-image: url("arena.jpg"); */
+  background-color: #cccccc;
+  height:500px;
+  width:500px;
+
+}
+.player{
+  grid-area: player;
+}
+.opponent{
+  grid-area: opponent;
 }
