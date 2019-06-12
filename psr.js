@@ -1,28 +1,62 @@
-function game(n){
-    // Play a n rounds of psr.
-    let compWins = 0;
-    let playWins = 0;
-    let ties = 0;
-    for (let i = 0; i < n; i++){
-        let p_choice = playerChoice()
-        let c_choice = computerChoice()
 
-        let result = playRound(p_choice, c_choice);
-        console.log(result)
-        if (result === "Tie."){
-            ties += 1;
-        }else if (result === "You Win."){
-            playWins += 1;
-        }else{
-            compWins += 1;
-        }
+let pScore = document.getElementById("playScore");
+let oScore = document.getElementById("oppScore");
+let goal = document.getElementById("goal").value;
+let compWins = 0;
+let playWins = 0;
+let ties = 0;
+let roundsPlayed = 0
+let active = false;
+
+// event handlers
+const choices = document.querySelectorAll(".choice");
+
+const scores = document.querySelectorAll(".score");
+scores.forEach(score => score.addEventListener("transitionend", (e) => {
+    score.classList.remove("scored");
+}));
+
+const button = document.getElementById("newGame");
+button.addEventListener("click", newGame);
+
+
+function getChoice(e){
+    //Get input from user if game is active
+    if (active === false){
+        return;
     }
-    if (compWins === playWins){
-        console.log("It was a draw.")
-    }else if (compWins > playWins){
-        console.log(`"Your Opponent wins with a score of ${compWins} to ${playWins}."`)
+
+    // Play a round
+    let playChoice = e.target.innerHTML;
+    let compChoice = computerChoice();
+    let result = playRound(playChoice, compChoice)
+    
+    // Display results
+    if (result === "Win"){
+        playWins += 1;
+        pScore.textContent = playWins;
+        pScore.classList.add("scored")
+
+    }else if (result=== "Lose"){
+        compWins += 1;
+        oScore.textContent = compWins;
+        oScore.classList.add("scored")
+
     }else{
-        console.log(`"You win with a score of ${playWins} to ${compWins}."`)
+        ties +=1;
+    }
+    // End the game if score goal is reached. 
+    if (playWins === goal){
+        active = false;
+        document.getElementById("info").textContent = "You Win!"
+    }
+    else if (compWins === goal){
+        active = false;
+        document.getElementById("info").textContent = "You Lose!"
+    }
+    // remove button listener if a winner has been determined
+    if (!active){
+        choices.forEach(choice => choice.removeEventListener("click", getChoice));
     }
 }
 
@@ -43,19 +77,6 @@ function computerChoice(){
     return choice;
 }
 
-function playerChoice(){
-   // Prompt user for choice.
-    let p_choice;
-    let choices = ["Paper", "Scissors", "Rock"]
-    // Check that item is a proper choice by ensuring it has an index ( if not it will have an index of -1)
-   do{
-       p_choice = prompt("Paper, Scissors, or Rock?")
-       p_choice = initCaps(p_choice);
-   }while(choices.indexOf(p_choice) < 0)
-
-   return p_choice;
-}
-
 
 function playRound(playChoice, compChoice){
     // Simulate a round of Paper Scissors Rock.
@@ -69,9 +90,6 @@ function playRound(playChoice, compChoice){
     output.appendChild(yourPlay);
     output.appendChild(theirPlay);
 
-    console.log(`"You played ${playChoice}"`)
-    console.log(`"Opponent played ${compChoice}"`)
-
     if (playChoice === compChoice){
         return "Tie."
     }else if (playChoice === "Paper"){
@@ -84,94 +102,34 @@ function playRound(playChoice, compChoice){
 
 }
 
+
+function newGame(){
+    // Start a new game.
+    document.getElementById("info").textContent = "Paper, Scissors, or Rock?";
+    compWins = 0;
+    playWins = 0;
+    ties = 0;
+    roundsPlayed = 0
+    
+    goal = document.getElementById("goal").value;
+    goal = Number(goal);
+    active = true;
+
+    pScore.textContent = playWins;
+    oScore.textContent = compWins;
+
+    choices.forEach(choice => choice.addEventListener("click", getChoice));
+ 
+    let output = document.querySelector(".results");
+    // Remove all children except the header
+    while (output.children.length > 1){
+        output.removeChild(output.children[1]);
+    }
+}
+ 
 function randInt(min, max){
     // Generate a random integer.
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min);
 }
-
-function initCaps(string){
-    let new_string = string.toLowerCase();
-    let second = new_string.substring(1);
-    let first = new_string.charAt(0);
-    first = first.toUpperCase()
-    value = first.concat(second);
-    return value;
- } 
- 
-
-
- let pScore = document.getElementById("playScore");
- let oScore = document.getElementById("oppScore");
- let goal = document.getElementById("goal").value;
- let compWins = 0;
- let playWins = 0;
- let ties = 0;
- let roundsPlayed = 0
- let active = false;
-
-function newGame(){
- document.getElementById("info").textContent = "Good Luck!"
- compWins = 0;
- playWins = 0;
- ties = 0;
- roundsPlayed = 0
- goal = Number(goal);
- active = true;
-
- pScore.textContent = playWins;
- oScore.textContent = compWins;
- // TODO Delete old Element. 
- choices.forEach(choice => choice.addEventListener("click", getChoice));
-}
- 
-function getChoice(e){
-    if (active === false){
-        return;
-    }
-    let playChoice = e.target.innerHTML;
-    let compChoice = computerChoice();
-    let result = playRound(playChoice, compChoice)
-    if (result === "Win"){
-        playWins += 1;
-        pScore.textContent = playWins;
-        pScore.classList.add("scored")
-
-    }else if (result=== "Lose"){
-        compWins += 1;
-        oScore.textContent = compWins;
-        oScore.classList.add("scored")
-
-    }else{
-        ties +=1;
-    }
-
-    if (playWins === goal){
-        console.log("Player Wins");
-        active = false;
-        document.getElementById("info").textContent = "You Win!"
-    }
-    else if (compWins === goal){
-        console.log("Opponent Wins")
-        active = false;
-        document.getElementById("info").textContent = "You Lose!"
-    }
-    if (!active){
-        choices.forEach(choice => choice.removeEventListener("click", getChoice));
-    }
-}
-
-
-
-
-// event handlers
-const choices = document.querySelectorAll(".choice");
-
-const scores = document.querySelectorAll(".score");
-scores.forEach(score => score.addEventListener("transitionend", (e) => {
-    score.classList.remove("scored");
-}));
-
-const button = document.getElementById("newGame");
-button.addEventListener("click", newGame);

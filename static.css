@@ -12,7 +12,7 @@ body {
   justify-items: center;
   grid-template-areas: 
     "... header header ..."
-    "sidebar sidebar canvas canvas"
+    "... sidebar canvas ..."
     "player results results opponent"
   }
 
@@ -44,8 +44,6 @@ body {
 
 .results{
   grid-area: results;
-  /* color: whitesmoke; */
-  /* background-image: url("arena.jpg"); */
   background-color: #cccccc;
   height:500px;
   width:500px;
